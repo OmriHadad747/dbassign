@@ -14,9 +14,9 @@ Create a command-line application that, given a list of website URLs as input, v
 #### Application arguments
 The application support two arguments:
 - `-v, --verbose` - Print logs to std.err during application run.
-	##### example
+	#### example
 	`docker run -i [IMAGE_NAME] -v < [PATH_TO_TXT_FILE]`
 	
 - `-t, --threads` - Specifying how many threads to use. Default is 16.
-	##### example
+	#### example
 	`docker run -i [IMAGE_NAME] -t [NUM_OF_THREADS] < [PATH_TO_TXT_FILE]`
