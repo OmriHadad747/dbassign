@@ -2,6 +2,7 @@
 
 import os
 import re
+from reprlib import recursive_repr
 import sys
 import argparse
 import requests
@@ -53,14 +54,39 @@ def crawl_logo(link, soup):
     return fix_img_path(link, img_tags[0]["src"])
 
 
-def crawl_phones(html, soup):
-    # span_tags = soup.select('a[href*="tel"] > span')
-    # phones = []
-    # for tag in span_tags:
-    #     if re.match(r"[\d\+\(]?[\(]?[\d]+[\)\s\-\\\/]?[\s]?[\(]?[\-\\\/]?[\d]+[\s\-\\\/]?[\)]?[\s]?[\d]+[\s\-\\\/]?[\d]+[\s\-\\\/]?[\d]+", tag.text):
-    #         phones.append(tag.text)
+def clean_phones(phones):
+    """
+    This function clean any character from a phone number except '+', '(', ')'
 
-    return None  
+    Args:
+        - phones (list) : list of phone numbers
+
+    Return:
+        A cleaned phones list
+    """
+    clean_phones = []
+    for phone in phones:
+        # Clean unwanted chars
+        phone = phone.replace("-", " ").replace("/", " ")
+    
+        # Clean small numbers
+        if len(phone) < 11:
+            continue
+
+        clean_phones.append(phone)
+    return clean_phones
+
+
+def crawl_phones(soup):
+    body_tag_strings = soup.body.strings
+    found_phones = set()
+    for string in body_tag_strings:
+        string = string.replace("\r", "").replace("\n", "").replace("\r", "").replace(" ", "")
+        phones = re.findall(r"[\d\+\(]?[\(]?[\d]+[\)\s\-\\\/]?[\s]?[\(]?[\-\\\/]?[\d]+[\s\-\\\/]?[\)]?[\s]?[\d]+[\s\-\\\/]?[\d]+[\s\-\\\/]?[\d]+", string)
+        if len(phones) > 0:
+            found_phones = found_phones.union(set(phones))
+
+    return clean_phones(list(found_phones))
 
 
 def crawl_link(link):
@@ -85,11 +111,11 @@ def crawl_link(link):
     except HTTPError:
         print("Http error", file=sys.stderr)
 
-    soup = BeautifulSoup(resp.content, "html.parser")
+    soup = BeautifulSoup(resp.text, "html.parser")
     try:
         link_data = {
             "logo": crawl_logo(link, soup),
-            "phones": crawl_phones(resp.text, soup),
+            "phones": crawl_phones(soup),
             "website": link.rstrip()
         }
     except IndexError:
@@ -102,10 +128,6 @@ def crawl_link(link):
 
 VERBOSE = None
 THREADS_NUM = None
-
-# sites = ["https://www.illion.com.au", "https://www.cmsenergy.com/contact-us/default.aspx", 
-#          "https://www.cialdnb.com/en", "https://www.powerlinx.com/contact",
-#          "https://www.phosagro.com/contacts", "https://www.illion.com.au/contact-us"]
 
 if __name__ == "__main__":
     # Create and define the argument parser object
