@@ -25,7 +25,6 @@ def fix_img_path(link, logo_path):
         If the logo path is absolute return the same received path, otherwise, return the fixed logo path
     """
 
-    # with lock:
     # Fix the network location part if needed
     if not bool(urlparse(logo_path).netloc):
         logo_path = urljoin(link, logo_path)
