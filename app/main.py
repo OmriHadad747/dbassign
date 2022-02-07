@@ -78,9 +78,20 @@ def clean_phones(phones):
 
 
 def crawl_phones(soup):
+    """
+    This function process all the text inside the <body> tag
+    and attempts to find phone numbers inside the text using regex
+
+    Arga:
+        - soup (bs) : A BeauifulSoup object which will help to found the text in the <body> tag
+
+    Return:
+        A cleaned phones list
+    """
     body_tag_strings = soup.body.strings
     found_phones = set()
     for string in body_tag_strings:
+        # Clear white spaces, '\r', '\n' chars from the text
         string = string.replace("\r", "").replace("\n", "").replace("\r", "").replace(" ", "")
         phones = re.findall(r"[\d\+\(]?[\(]?[\d]+[\)\s\-\\\/]?[\s]?[\(]?[\-\\\/]?[\d]+[\s\-\\\/]?[\)]?[\s]?[\d]+[\s\-\\\/]?[\d]+[\s\-\\\/]?[\d]+", string)
         if len(phones) > 0:
