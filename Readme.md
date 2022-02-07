@@ -24,7 +24,7 @@ The application support two arguments:
 -  `-t, --threads` - Specifying how many threads to use. Default is 16. **For example**
 `docker run -i [IMAGE_NAME] -t [NUM_OF_THREADS] < [PATH_TO_TXT_FILE]`
 
-#### Website's logo extraction method
+#### Website's logo extraction clarifications
 After research during the assignment, I found two main methods to extract the website's logo. 
 1. Search the `<link>` tag that stores the favicon inside the `<head>` tag and extracts the website's logo.
 2. Search the first `<img>` or `<svg>` tags that appear inside the `<body>` tag while assuming that, in absolute most cases, the first image is the website's logo.
